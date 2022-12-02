@@ -32,13 +32,4 @@ class Arduino:
             packet = self.serialInst.readline()
             t = str(packet.decode('utf').rstrip('\n')).split(',')
             return t
-        
-ser = Arduino()
-while True:
-    try: 
-        t = ser.serial()
-        print(float(t[0]))
-        print(float(t[1]))
-        sleep(1)
-    except: pass
     

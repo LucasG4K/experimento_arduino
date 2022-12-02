@@ -9,11 +9,14 @@ def init_exp():
 if __name__ == '__main__':
 # =====================================================================
     # INICIA CONFIG ARDUINO
-    serial_port = 'COM5'
-    arduino = arduino(serial_port)
-
-    arduino.cria_porta() # definida entrada 0
-    sleep(.05)
+    ser = Arduino()
+    while True:
+        try:
+            t = ser.serial()
+            print(float(t[0]))
+            print(float(t[1]))
+            sleep(1)
+        except: pass
 # =====================================================================
     # PARÂMETROS DADOS PELO USUÁRIO -> IMPLEMENTAR NA INTERFACE
     R = float(input('Entre com o valor do resistor (ohm):')) # resistor para aquecimento => PARAM. OBRIGATÓRIO
