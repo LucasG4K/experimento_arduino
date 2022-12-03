@@ -1,4 +1,3 @@
-from time import sleep
 import serial.tools.list_ports
 
 class Arduino:

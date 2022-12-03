@@ -1,6 +1,7 @@
 from numpy import polyfit, poly1d
 from pandas import read_csv
 import matplotlib.pyplot as plt
+from time import sleep
 import csv
 
 class Analise:
@@ -47,4 +48,5 @@ class Analise:
         data = read_csv('data.csv')
         x = data['tempo']
         y = data['temperatura']
+        sleep(1)
         return polyfit(x,y,1)
