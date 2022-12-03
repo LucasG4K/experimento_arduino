@@ -1,11 +1,20 @@
 from datetime import datetime
 class Joule:
 
-    def __init__(self, resistor,massa_fluido = 0.0,cap_term_recipiente = 0.0):
+    def __init__(self, resistor = 1.0, massa_fluido = 0.0, cap_term_recipiente = 0.0):
         self.resistor = resistor
         self.massa_fluido = massa_fluido
         self.cap_term_recipiente = cap_term_recipiente
         self.T0 = 0
+    
+    def set_resistor(self, resistor):
+        self.resistor = resistor
+    
+    def set_massa_fluido(self, massa_fluido):
+        self.massa_fluido = massa_fluido
+    
+    def set_cap_term_recipiente(self, cap_term_recipiente):
+        self.cap_term_recipiente = cap_term_recipiente
 
     def set_T0(self, temperature):
         self.T0 = temperature
