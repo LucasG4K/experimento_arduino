@@ -14,20 +14,17 @@ class Joule:
         self.t0 = datetime.now()
 
     def get_dt(self):
-        return datetime.now()
-
-    def get_temperature(voltage_value): # converte a tensao do sensor em temperatura
-        pass
-    
-    def get_voltage(voltage_value): # converte a tensao do sensor em tensao saída da fonte
-        return voltage_value * 5 # x5 para converter em saída ou 7250 / (72500 + 29700)
+        return round((datetime.now() - self.t0).total_seconds(),2)
         
-    def capacidade_termica(self, V,R,t,T): # para chamar (voltage(volts), resistor,time, temperature(T)
-        if R > 0 and T - self.t0 != 0:
-            return (V**2 / R) * t / (T - self.t0) - self.cap_term_recipiente # J/s / °C ou J/°C
+    def capacidade_termica(self, V,R,T): # para chamar (voltage(volts), resistor,time, temperature(T)
+        if R > 0 and T - self.T0 != 0:
+            return (V**2 / R) * self.get_dt() / (T - self.T0) - self.cap_term_recipiente # J/s / °C ou J/°C
         else: return 0
 
     def calor_especifico(self, cap_term_fluido):
         if self.massa_fluido > 0:
             return cap_term_fluido / self.massa_fluido
         else: return 0
+
+    def estima_C():
+        pass
