@@ -26,7 +26,7 @@ class Arduino:
             self.serialInst.open()
         except:
             print('Erro ao inicializar.')
-
+        
     def clear_serial(self):
         self.serialInst.flush()
     
