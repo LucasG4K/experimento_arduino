@@ -17,9 +17,17 @@ def parser(value):
 
 if __name__ == '__main__':
 
-
+# =====================================================================
+    # INICIA CONFIG CSV
+    analise = Analise()
+# =====================================================================
+    # INICIA CONFIG ARDUINO
+    data = Arduino()
+# =====================================================================
     # INICIA CONFIG JOULE
     joule = Joule()
+# =====================================================================
+    # PARÂMETROS DADOS PELO USUÁRIO -> IMPLEMENTAR NA INTERFACE
 
     janela = Tk()
     janela.title("Teste")
@@ -52,19 +60,10 @@ if __name__ == '__main__':
     botao = Button(janela, text="Exibir Gráfico", command =lambda: print(joule.resistor))
     botao.grid(column=0, row=6, padx=10, pady=10)
 
-
     janela.mainloop()
 # =====================================================================
-    # PARÂMETROS DADOS PELO USUÁRIO -> IMPLEMENTAR NA INTERFACE
-    
-# =====================================================================
-    # INICIA CONFIG CSV
-    analise = Analise()
-# =====================================================================
-  
-# =====================================================================
-    # INICIA CONFIG ARDUINO
-    data = Arduino()
+    # FLUSH SERIAL
+
     data.clear_serial()
     temp = data.getSensorData()
 # =====================================================================
