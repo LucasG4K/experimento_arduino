@@ -3,8 +3,10 @@ from class_Joule import *
 from class_analise import *
 import requests
 from tkinter import *
+from PySimpleGUI import PySimpleGUI as sg
+
 # parser(entry_resist.get()), parser(entry_creserv.get()), parser(entry_massflui.get())
-def testao(J, R, M, CR):
+def inicializa(J, R, M, CR):
     J.set_resistor(R)
     J.set_massa_fluido(M)
     J.set_cap_term_recipiente(CR)
@@ -14,31 +16,6 @@ def parser(value):
         return float(value)
     except ValueError:
         return 0
-
-def experimento(data, joule):
-# =====================================================================
-    # FLUSH SERIAL
-
-    data.clear_serial()
-    temp = data.getSensorData()
-# =====================================================================
-    # INICIA EXPERIMENTO
-
-    joule.set_T0 = temp[0]
-    joule.set_t0()
-    
-    while joule.get_dt() < 15:
-        a = joule.capacidade_termica(temp[1],joule.resistor,temp[0])
-        b = joule.calor_especifico(a)
-        # print('EM TEMPO REAL: C='+ str(a) + 'J/°C c = ' + str(b) + 'J/Kg°C')
-        analise.att_arquivo(joule.get_dt(), temp[0])
-        analise.plot()
-        #analise.show()
-        sleep(2)
-        temp = data.getSensorData()
-
-    print(analise.coef())
-    
 
 if __name__ == '__main__':
 
@@ -54,35 +31,58 @@ if __name__ == '__main__':
 # =====================================================================
     # PARÂMETROS DADOS PELO USUÁRIO -> IMPLEMENTAR NA INTERFACE
 
-    janela = Tk()
-    janela.title("Teste")
-    janela.geometry('500x500')
-    texto = Label(janela, text="Informe os valores", font=('Arial 10'), anchor= 'w')
-    texto.grid(column=0, row=0, padx=10, pady=10, sticky=NSEW)
+#interface em pysimple gui
 
-    texto1 = Label(janela, text="Tempo máximo:", font=('Arial 10'), anchor= 'w')
-    texto1.grid(column=0, row=1, padx=10, pady=10, sticky=NSEW)
-    entry_enttempo = Entry(janela, width=10, font=('Arial 10'))
-    entry_enttempo.grid(column= 1,row =1, padx=10, pady=10 )
+#layout
+    sg.theme('Reddit')
+    layout = [
+        [sg.Text('Dados                                '),       sg.Text("                            Atualização em tempo real")],
+        [sg.Text('Tempo de análise(s)                  '), sg.Input(key = 't_max', size = (10,1)),       sg.Text("", key = "Temperatura")],
+        [sg.Text('Resistência(ohm)                      '), sg.Input(key = 'resistência', size = (10,1)),   sg.Text("", key = "Tempo")],
+        [sg.Text('Cap. Térmica Reservatório (J/ºC)'), sg.Input(key = 'Capacidade_reservatorio', size = (10,1)),  sg.Text("", key = "Ax+B")],
+        [sg.Text('Massa do fluido(Kg)                  '), sg.Input(key = 'massa_fluido', size = (10,1))],
+        [sg.Button('Confirmar')]
+    ]
+    # Janela
+    janela = sg.Window('experimento', layout)
+    #ler enventos
+    while True:
+        eventos, valores = janela.read()
+         
+        joule.set_resistor(parser(valores["resistência"]))
+        joule.set_cap_term_recipiente(parser(valores["Capacidade_reservatorio"]))
+        joule.set_massa_fluido(parser(valores["massa_fluido"]))
+        
 
-    texto2 = Label(janela, text="Resistência:", font=('Arial 10'), anchor= 'w')
-    texto2.grid(column=0, row=2, padx=10, pady=10, sticky=NSEW)
-    entry_resist = Entry(janela, width=10, font=('Arial 10'))
-    entry_resist.grid(column= 1,row =2, padx=10, pady=10 )
+        if eventos == sg.WINDOW_CLOSED:
+            break 
+        if eventos == 'Confirmar':
+#======================================================================
+        #Inicializando os valores
+        
+# =====================================================================
+        # FLUSH SERIAL e ARQUIVO
+            analise.novoArquivo()
+            data.clear_serial()
+            temp = data.getSensorData()
+# =====================================================================
+            # INICIA EXPERIMENTO
 
-    texto3 = Label(janela, text="Capacidade do Reservatório:", font=('Arial 10'), anchor= 'w')
-    texto3.grid(column=0, row=3, padx=10, pady=10, sticky=NSEW)
-    entry_creserv = Entry(janela, width=10, font=('Arial 10'))
-    entry_creserv.grid(column= 1,row =3, padx=10, pady=10 )
+            joule.set_T0 = temp[0]
+            joule.set_t0()
+            
+            while joule.get_dt() < parser(valores["t_max"]):
+                a = joule.capacidade_termica(temp[1],joule.resistor,temp[0])
+                b = joule.calor_especifico(a)
+                # print('EM TEMPO REAL: C='+ str(a) + 'J/°C c = ' + str(b) + 'J/Kg°C')
+                analise.att_arquivo(joule.get_dt(), temp[0])
+                analise.plot()
+                sleep(1)
+                temp = data.getSensorData()
+                janela["Temperatura"].update(f"T(t)={temp[0]} °C")
+                janela["Tempo"].update(f"t={joule.get_dt()} s")
+            
+            janela["Ax+B"].update(f"{analise.coef()[0]}t + {analise.coef()[1]}")
+            
 
-    texto4 = Label(janela, text="Massa do fluído:", font=('Arial 10'), anchor= 'w')
-    texto4.grid(column=0, row=4, padx=10, pady=10, sticky=NSEW)
-    entry_massflui = Entry(janela, width=10, font=('Arial 10'))
-    entry_massflui.grid(column= 1,row =4, padx=10, pady=10 )
-
-    botao = Button(janela, text="Confirmar", command =lambda: testao(joule, parser(entry_resist.get()), parser(entry_creserv.get()), parser(entry_massflui.get())))
-    botao.grid(column=0, row=5, padx=10, pady=10)
-    botao = Button(janela, text="Exibir Gráfico", command =lambda: experimento(data, joule))
-    botao.grid(column=0, row=6, padx=10, pady=10)
-
-    janela.mainloop()
+            

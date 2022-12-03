@@ -9,6 +9,9 @@ class Analise:
     cabecalho = ['tempo', 'temperatura']
 
     def __init__(self):
+        self.novoArquivo()
+    
+    def novoArquivo(self):
         with open(self.nome_arq, 'w') as csv_file:
             csv_writer = csv.DictWriter(csv_file, fieldnames=self.cabecalho)
             csv_writer.writeheader()
@@ -27,7 +30,7 @@ class Analise:
         plt.cla()
         plt.ylabel('Temperatura (°C)')
         plt.xlabel('Tempo (s)')
-        plt.axis([0, 500, 10, 40])
+       #plt.axis([0, 500, 10, 40])
 
         if len(x) > 1:
             coef = polyfit(x,y,1)
