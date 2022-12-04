@@ -1,4 +1,5 @@
 import serial.tools.list_ports
+from time import sleep
 
 class Arduino:
     def INCERTEZA_INSTRUMENTO(value): return value * 0.03
@@ -13,19 +14,20 @@ class Arduino:
             portsList.append(str(onePort))
             print(str(onePort))
 
-        val = input("Select Port: COM")
+        for x in portsList:
+            print(x[:4] + ' escolhida!')
+            if 'COM' in x:
+                portVar = str(x[:4])
 
-        for x in range(0,len(portsList)):
-            if portsList[x].startswith("COM" + str(val)):
-                portVar = "COM" + str(val)
-                print(portVar)
-
-        try:
-            self.serialInst.baudrate = 9600
-            self.serialInst.port = portVar
-            self.serialInst.open()
-        except:
-            print('Erro ao inicializar.')
+        while True:
+            try:
+                self.serialInst.baudrate = 9600
+                self.serialInst.port = portVar
+                self.serialInst.open()
+                break
+            except:
+                print('Erro ao inicializar.')
+                sleep(1)
         
     def clear_serial(self):
         self.serialInst.flush()

@@ -1,17 +1,6 @@
 
 from PySimpleGUI import PySimpleGUI as sg
 
-def inicializa(J, R, M, CR):
-    J.set_resistor(R)
-    J.set_massa_fluido(M)
-    J.set_cap_term_recipiente(CR)
-
-def parser(value):
-    try:
-        return float(value)
-    except ValueError:
-        return
-
 #janela de dados
 def janelaDados():
     sg.theme('Reddit')

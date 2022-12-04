@@ -22,7 +22,7 @@ class Analise:
             info = {self.cabecalho[0]: t, self.cabecalho[1]: T}
             csv_writer.writerow(info)
 
-    def plot(i):
+    def plot(i, t):
         data = read_csv('data.csv')
         x = data['tempo']
         y = data['temperatura']
@@ -30,7 +30,7 @@ class Analise:
         plt.cla()
         plt.ylabel('Temperatura (°C)')
         plt.xlabel('Tempo (s)')
-       #plt.axis([0, 500, 10, 40])
+        plt.axis([-1, t + 1, 10, 60])
 
         if len(x) > 1:
             coef = polyfit(x,y,1)

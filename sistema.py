@@ -3,6 +3,12 @@ from class_Joule import *
 from class_analise import *
 from class_interface import*
 
+def parser(value):
+    try:
+        return float(value)
+    except ValueError:
+        return
+
 if __name__ == '__main__':
 
 # =====================================================================
@@ -15,36 +21,35 @@ if __name__ == '__main__':
     # INICIA CONFIG JOULE
     joule = Joule()
 # =====================================================================
-    # PARÂMETROS DADOS PELO USUÁRIO -> IMPLEMENTAR NA INTERFACE
-
     #interface em pysimple gui
     
     #Criando Janelas iniciais
     janela1, janela2 = janelaDados(), None
 
     while True:
-        window,event,values = sg.read_all_windows()
-        
-        
-        
+        window,event,values = sg.read_all_windows()       
+# =====================================================================
         #quando a janela for fechada
         if window == janela1 and event == sg.WIN_CLOSED:
             break
+# =====================================================================
         #ir para a próxima janela
         if window == janela1 and event == 'Confirmar':
+            # PARÂMETROS DADOS PELO USUÁRIO -> IMPLEMENTAR NA INTERFACE
             joule.set_resistor(parser(values['resistencia']))
             joule.set_cap_term_recipiente(parser(values['Capacidade_reservatorio']))
             joule.set_massa_fluido(parser(values['massa_fluido']))
             t_max = parser(values['t_max'])
             janela2 = janelaAtulaizacaoDados()
             janela1.hide()
-
+# =====================================================================
         if window == janela2 and event == 'Plotar grafico':
 # =====================================================================
         # FLUSH SERIAL e ARQUIVO
             analise.novoArquivo()
             data.clear_serial()
             temp = data.getSensorData()
+# =====================================================================
             # INICIA EXPERIMENTO
 
             joule.set_T0 = temp[0]
@@ -55,16 +60,18 @@ if __name__ == '__main__':
                 b = joule.calor_especifico(a)
                 # print('EM TEMPO REAL: C='+ str(a) + 'J/°C c = ' + str(b) + 'J/Kg°C')
                 analise.att_arquivo(joule.get_dt(), temp[0])
-                analise.plot()
-                sleep(1)
-                temp = data.getSensorData()
+                analise.plot(t_max)
                 janela2['Temperatura'].update(f'T(t)={temp[0]} °C')
                 janela2['Tempo'].update(f't={joule.get_dt()} s')
+                sleep(1)
+                temp = data.getSensorData()
             
-            janela2['Ax+B'].update(f'{analise.coef()[0]}t + {analise.coef()[1]}')
+            janela2['Ax+B'].update(f'T(t) = {analise.coef()[0]}t + {analise.coef()[1]}')
         
-        if window == janela2 and event == 'Voltar':
+# =====================================================================
+        elif window == janela2 and event == 'Voltar':
             janela2.hide()
             janela1.un_hide()
-        if window == janela2 and event ==  sg.WIN_CLOSED:
+# =====================================================================
+        elif window == janela2 and event ==  sg.WIN_CLOSED:
             break
