@@ -6,10 +6,6 @@ from tkinter import *
 from PySimpleGUI import PySimpleGUI as sg
 
 # parser(entry_resist.get()), parser(entry_creserv.get()), parser(entry_massflui.get())
-def inicializa(J, R, M, CR):
-    J.set_resistor(R)
-    J.set_massa_fluido(M)
-    J.set_cap_term_recipiente(CR)
 
 def parser(value):
     try:
@@ -43,7 +39,8 @@ if __name__ == '__main__':
         [sg.Text('Massa do fluido(Kg)                  '), sg.Input(key = 'massa_fluido', size = (10,1))],
         [sg.Button('Confirmar')]
     ]
-    # Janela
+    
+    # Janela1
     janela = sg.Window('experimento', layout)
     #ler enventos
     while True:
@@ -83,6 +80,5 @@ if __name__ == '__main__':
                 janela["Tempo"].update(f"t={joule.get_dt()} s")
             
             janela["Ax+B"].update(f"{analise.coef()[0]}t + {analise.coef()[1]}")
-            
-
+        
             
