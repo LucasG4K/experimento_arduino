@@ -28,19 +28,18 @@ class Arduino:
             except:
                 print('Erro ao inicializar.')
                 sleep(1)
-        
-    def clear_serial(self):
-        self.serialInst.flush()
-    
+            
     def serial(self):
-        if self.serialInst.in_waiting: 
-            packet = self.serialInst.readline()
-            t = str(packet.decode('utf').rstrip('\n')).split(',')
-            return t
+        self.serialInst.flushInput()
+        self.serialInst.flushOutput()
+        packet = self.serialInst.readline()
+        t = str(packet.decode('utf').rstrip('\n')).split(',')
+        return t
     
     def getSensorData(self):
-        while True:
-            try:
-                t = self.serial()
-                return [float(t[0]), float(t[1])]
-            except: pass
+        t = None
+        while t is None:
+            t = self.serial()
+            if t is not None:
+                break
+        return [float(t[0]), float(t[1])]

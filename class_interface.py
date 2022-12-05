@@ -11,7 +11,7 @@ layout = [
     [sg.Text('Cap. Térmica Reservatório (J/°C)', size=(25, 1)), sg.Input(key = 'C_reserv',    size = (10,1))],
     [sg.Text('Massa do fluido(Kg)',              size=(25, 1)), sg.Input(key = 'm_fluido',    size = (10,1))],
     [sg.Button('Confirmar'), sg.Button('Parar')],
-    [sg.Text('Att em tempo real')],
+    [sg.Text('', key = 'status')],
     [sg.Graph((640, 480), (0, 0), (640, 480), key='Graph')]
 ]
 janela = sg.Window('Dados', layout, finalize=True)

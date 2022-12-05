@@ -5,20 +5,24 @@ import csv
 
 class Analise:
     nome_arq = 'data.csv'
-    cabecalho = ['tempo', 'temperatura']
+    cabecalho = ['tempo', 'temperatura', 'pot', 'C', 'c', 'C_estimado', 'T0_estimado']
 
     def __init__(self):
         self.novoArquivo()
     
     def novoArquivo(self):
-        with open(self.nome_arq, 'w') as csv_file:
+        with open(self.nome_arq, 'w', newline= '') as csv_file:
             csv_writer = csv.DictWriter(csv_file, fieldnames=self.cabecalho)
             csv_writer.writeheader()
     
-    def att_arquivo(self,t,T):
-        with open(self.nome_arq, 'a') as csv_file:
+    def att_arquivo(self,data):
+        with open(self.nome_arq, 'a', newline= '') as csv_file:
             csv_writer = csv.DictWriter(csv_file, fieldnames=self.cabecalho)
-            info = {self.cabecalho[0]: t, self.cabecalho[1]: T}
+            # info = {self.cabecalho[0]: t, self.cabecalho[1]: T, }
+            info = {}
+            for i in range(0,len(self.cabecalho)):
+                info.setdefault(self.cabecalho[i], data[i])
+            print(info)
             csv_writer.writerow(info)
 
     def plot(i, t):
@@ -31,7 +35,7 @@ class Analise:
         plt.ylabel('Temperatura (°C)')
         plt.xlabel('Tempo (s)')
         plt.title('Temperatura (°C) x tempo (s)')
-        plt.axis([-1, t + 1, 10, 60])
+        plt.axis([0 - t*.1, t + t*.1, 10, 60])
         plt.grid()
         plt.tight_layout()
 
@@ -46,4 +50,6 @@ class Analise:
         data = read_csv('data.csv')
         x = data['tempo']
         y = data['temperatura']
-        return polyfit(x,y,1)
+        if len(x) > 1:
+            return polyfit(x,y,1)
+        else: return [1,0]

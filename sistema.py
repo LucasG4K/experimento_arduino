@@ -30,7 +30,7 @@ if __name__ == '__main__':
     controle = False
 
     while True:
-        event, values = janela.read(timeout=10)       
+        event, values = janela.read(timeout=10)
 # =====================================================================
         #quando a janela for fechada
         if event == sg.WIN_CLOSED:
@@ -47,26 +47,32 @@ if __name__ == '__main__':
 # =====================================================================
         elif event == 'Parar':
             controle = init = False
+            janela['status'].update(f'Encerrado!')
 # =====================================================================
         elif event == sg.TIMEOUT_EVENT and controle == True:
 # =====================================================================
-        # FLUSH SERIAL e ARQUIVO
-            temp = data.getSensorData()
-            if init == True:
-                data.clear_serial()
-                temp = data.getSensorData()
-                analise.novoArquivo()
-                joule.set_T0 = temp[0]
-                joule.set_t0()
-                print(joule.get_dt())
-                init = False
-# =====================================================================
+            janela['status'].update('Executando...')
             # INICIA EXPERIMENTO
             if init == False and joule.get_dt() < t_max:
-                analise.att_arquivo(joule.get_dt(), temp[0])
+                temp = data.getSensorData()
+                C = joule.estima_C(temp[1]/joule.resistor, analise.coef())
+                analise.att_arquivo([joule.get_dt(), temp[0], temp[1]**2 / joule.resistor, joule.capacidade_termica(temp), joule.calor_especifico(joule.capacidade_termica(temp)), C[0], C[1]])
                 analise.plot(t_max)
-            else: 
+            elif init == True:
+                # FLUSH SERIAL e ARQUIVO
+                analise.novoArquivo()
+                temp = data.getSensorData()
+                joule.set_T0 = temp
+                joule.set_t0()
+                analise.att_arquivo([joule.get_dt(), temp[0], temp[1]**2 / joule.resistor, joule.capacidade_termica(temp), joule.calor_especifico(joule.capacidade_termica(temp)), 0, 0])
+                analise.plot(t_max)
+                init = False
+# =====================================================================
+            # CONTINUA EXPERIMENTO
+            else:
                 print(analise.coef())
                 controle = False
+                janela['status'].update(f'Finalizado! C_estimado={round(C[0],4)}J/°C <-> T0_estimada={round(C[1],4)}°C')
+            print('--------\n'+ str(temp) + '\n------------')
 # =====================================================================
     janela.close()
