@@ -1,26 +1,24 @@
-
 from PySimpleGUI import PySimpleGUI as sg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib import use as use_agg
 
 #janela de dados
 def janelaDados():
     sg.theme('Reddit')
     layout = [
-        [sg.Text('Dados                                ')],
-        [sg.Text('Tempo de análise(s)                  '), sg.Input(key = 't_max', size = (10,1))],
-        [sg.Text('Resistência(ohm)                      '), sg.Input(key = 'resistencia', size = (10,1))],
-        [sg.Text('Cap. Térmica Reservatório (J/ºC)'), sg.Input(key = 'Capacidade_reservatorio', size = (10,1))],
-        [sg.Text('Massa do fluido(Kg)                  '), sg.Input(key = 'massa_fluido', size = (10,1))],
-        [sg.Button('Confirmar')]
+        [sg.Text('Dados',                            size=(25, 1))],
+        [sg.Text('Tempo de análise(s)',              size=(25, 1)), sg.Input(key = 't_max',       size = (10,1))],
+        [sg.Text('Resistência(ohm)',                 size=(25, 1)), sg.Input(key = 'resistencia', size = (10,1))],
+        [sg.Text('Cap. Térmica Reservatório (J/°C)', size=(25, 1)), sg.Input(key = 'C_reserv',    size = (10,1))],
+        [sg.Text('Massa do fluido(Kg)',              size=(25, 1)), sg.Input(key = 'm_fluido',    size = (10,1))],
+        [sg.Button('Confirmar'), sg.Button('Parar')],
+        [sg.Text('Att em tempo real')],
+        [sg.Graph((640, 480), (0, 0), (640, 480), key='Graph')]
     ]
     return sg.Window('Dados',  layout = layout, finalize= True)
 
-def janelaAtulaizacaoDados():
-    sg.theme('Reddit')
-    layout = [
-        [sg.Text('Atualização em tempo real')],
-        [sg.Text('', key = 'Temperatura')],
-        [sg.Text('', key = 'Tempo')],
-        [sg.Text('', key = 'Ax+B')],
-        [sg.Button('Plotar grafico'), sg.Button('Voltar')]
-    ]
-    return sg.Window('Atualização dos dados', layout = layout, finalize= True)
+def pack_figure(graph, figure):
+    canvas = FigureCanvasTkAgg(figure, graph.Widget)
+    plot_widget = canvas.get_tk_widget()
+    plot_widget.pack(side='top', fill='both', expand=1)
+    return plot_widget

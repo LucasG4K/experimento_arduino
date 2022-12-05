@@ -35,5 +35,10 @@ class Joule:
             return cap_term_fluido / self.massa_fluido
         else: return 0
 
-    def estima_C():
-        pass
+    def estima_C(pot,coef):
+        # At + B
+        # A = V*i/C => C = V**2/r*A
+        # B = T0
+        estimativa = [pot/coef[0], coef[1]]
+        return estimativa
+

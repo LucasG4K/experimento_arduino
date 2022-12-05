@@ -1,7 +1,6 @@
 from numpy import polyfit, poly1d
 from pandas import read_csv
 import matplotlib.pyplot as plt
-from time import sleep
 import csv
 
 class Analise:
@@ -26,30 +25,25 @@ class Analise:
         data = read_csv('data.csv')
         x = data['tempo']
         y = data['temperatura']
-
+        fig = plt.figure(1)
         plt.cla()
+        plt.legend(['Temperatura', 'Ajuste Linear'], loc='upper left')
         plt.ylabel('Temperatura (°C)')
         plt.xlabel('Tempo (s)')
+        plt.title('Temperatura (°C) x tempo (s)')
         plt.axis([-1, t + 1, 10, 60])
+        plt.grid()
+        plt.tight_layout()
 
         if len(x) > 1:
             coef = polyfit(x,y,1)
             poly1d_fn = poly1d(coef)
             plt.plot(x, y, '.', x, poly1d_fn(x), '--')
-            # print('A = ' + str(coef[0]) + '; B = ' + str(coef[1]))
         else: plt.scatter(x,y)
-        
-        plt.legend(['Temperatura', 'Ajuste Linear'], loc='upper left')
-        # plt.text('A = ' + str(coef[0]), 'B = ' + str(coef[1]))
-        plt.tight_layout()
-        plt.pause(0.05)
-    
-    def show(_):
-        plt.show()
+        fig.canvas.draw()
 
     def coef(_):
         data = read_csv('data.csv')
         x = data['tempo']
         y = data['temperatura']
-        sleep(1)
         return polyfit(x,y,1)

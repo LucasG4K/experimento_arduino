@@ -24,54 +24,65 @@ if __name__ == '__main__':
     #interface em pysimple gui
     
     #Criando Janelas iniciais
-    janela1, janela2 = janelaDados(), None
+    # janela = janelaDados()
+    sg.theme('Reddit')
+    layout = [
+        [sg.Text('Dados',                            size=(25, 1))],
+        [sg.Text('Tempo de análise(s)',              size=(25, 1)), sg.Input(key = 't_max',       size = (10,1))],
+        [sg.Text('Resistência(ohm)',                 size=(25, 1)), sg.Input(key = 'resistencia', size = (10,1))],
+        [sg.Text('Cap. Térmica Reservatório (J/°C)', size=(25, 1)), sg.Input(key = 'C_reserv',    size = (10,1))],
+        [sg.Text('Massa do fluido(Kg)',              size=(25, 1)), sg.Input(key = 'm_fluido',    size = (10,1))],
+        [sg.Button('Confirmar'), sg.Button('Parar')],
+        [sg.Text('Att em tempo real')],
+        [sg.Graph((640, 480), (0, 0), (640, 480), key='Graph')]
+    ]
+    janela = sg.Window('Dados', layout, finalize=True)
+    
+    # Initial
+    graph = janela['Graph']
+    plt.ioff()                          # Turn the interactive mode off
+    fig = plt.figure(1)                 # Create a new figure
+    pack_figure(graph, fig)           # Pack figure under graph
+    controle = False
 
     while True:
-        window,event,values = sg.read_all_windows()       
+        event, values = janela.read(timeout=10)       
 # =====================================================================
         #quando a janela for fechada
-        if window == janela1 and event == sg.WIN_CLOSED:
+        if event == sg.WIN_CLOSED:
             break
 # =====================================================================
         #ir para a próxima janela
-        if window == janela1 and event == 'Confirmar':
+        elif event == 'Confirmar':
             # PARÂMETROS DADOS PELO USUÁRIO -> IMPLEMENTAR NA INTERFACE
             joule.set_resistor(parser(values['resistencia']))
-            joule.set_cap_term_recipiente(parser(values['Capacidade_reservatorio']))
-            joule.set_massa_fluido(parser(values['massa_fluido']))
+            joule.set_cap_term_recipiente(parser(values['C_reserv']))
+            joule.set_massa_fluido(parser(values['m_fluido']))
             t_max = parser(values['t_max'])
-            janela2 = janelaAtulaizacaoDados()
-            janela1.hide()
+            if controle == False: controle = init = True
 # =====================================================================
-        if window == janela2 and event == 'Plotar grafico':
+        elif event == 'Parar':
+            controle = init = False
+# =====================================================================
+        elif event == sg.TIMEOUT_EVENT and controle == True:
 # =====================================================================
         # FLUSH SERIAL e ARQUIVO
-            analise.novoArquivo()
-            data.clear_serial()
             temp = data.getSensorData()
+            if init == True:
+                data.clear_serial()
+                temp = data.getSensorData()
+                analise.novoArquivo()
+                joule.set_T0 = temp[0]
+                joule.set_t0()
+                print(joule.get_dt())
+                init = False
 # =====================================================================
             # INICIA EXPERIMENTO
-
-            joule.set_T0 = temp[0]
-            joule.set_t0()
-            
-            while joule.get_dt() < t_max:
-                a = joule.capacidade_termica(temp[1],joule.resistor,temp[0])
-                b = joule.calor_especifico(a)
-                # print('EM TEMPO REAL: C='+ str(a) + 'J/°C c = ' + str(b) + 'J/Kg°C')
+            if init == False and joule.get_dt() < t_max:
                 analise.att_arquivo(joule.get_dt(), temp[0])
                 analise.plot(t_max)
-                janela2['Temperatura'].update(f'T(t)={temp[0]} °C')
-                janela2['Tempo'].update(f't={joule.get_dt()} s')
-                sleep(1)
-                temp = data.getSensorData()
-            
-            janela2['Ax+B'].update(f'T(t) = {analise.coef()[0]}t + {analise.coef()[1]}')
-        
+            else: 
+                print(analise.coef())
+                controle = False
 # =====================================================================
-        elif window == janela2 and event == 'Voltar':
-            janela2.hide()
-            janela1.un_hide()
-# =====================================================================
-        elif window == janela2 and event ==  sg.WIN_CLOSED:
-            break
+    janela.close()
