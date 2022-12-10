@@ -5,7 +5,7 @@ import csv
 
 class Analise:
     nome_arq = 'data.csv'
-    cabecalho = ['tempo', 'temperatura', 'pot', 'C', 'c', 'C_estimado', 'T0_estimado']
+    cabecalho = ['tempo', 'temperatura', 'pot', 'C', 'c', 'A', 'B']
 
     def __init__(self):
         self.novoArquivo()
@@ -35,7 +35,7 @@ class Analise:
         plt.ylabel('Temperatura (°C)')
         plt.xlabel('Tempo (s)')
         plt.title('Temperatura (°C) x tempo (s)')
-        plt.axis([0 - t*.1, t + t*.1, 10, 60])
+        # plt.axis([0 - t*.1, t + t*.1, 10, 60])
         plt.grid()
         plt.tight_layout()
 

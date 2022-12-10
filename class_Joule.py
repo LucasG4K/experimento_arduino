@@ -5,6 +5,8 @@ class Joule:
         self.resistor = resistor
         self.massa_fluido = massa_fluido
         self.cap_term_recipiente = cap_term_recipiente
+        self.cap_term_estimada = 0
+        self.cal_esp_estimada = 0
         self.T0 = 0
     
     def set_resistor(self, resistor):
@@ -24,21 +26,14 @@ class Joule:
 
     def get_dt(self):
         return round((datetime.now() - self.t0).total_seconds(),2)
-        
-    def capacidade_termica(self, TV): # para chamar (voltage(volts), temperature(T)
-        if self.resistor > 0 and TV[0] - self.T0 != 0:
-            return (TV[1]**2 / self.resistor) * self.get_dt() / (TV[0] - self.T0) - self.cap_term_recipiente # J/s / °C ou J/°C
-        else: return 0
 
-    def calor_especifico(self, cap_term_fluido):
-        if self.massa_fluido > 0:
-            return cap_term_fluido / self.massa_fluido
-        else: return 0
+# -------------------------------------------------------------------------------------------
+    # VALORES ESTIMADOS
+    def cap_term_estimado(self,pot,coef):
+        self.cap_term_estimada = pot/coef[0] - self.cap_term_recipiente
 
-    def estima_C(_,pot,coef):
-        # At + B
-        # A = V*i/C => C = V**2/r*A
-        # B = T0
-        estimativa = [pot/coef[0] - _.cap_term_recipiente, coef[1]]
-        return estimativa
+    def cal_esp_estimado(self):
+        self.cal_esp_estimada = self.cap_term_estimada / self.massa_fluido
+# -------------------------------------------------------------------------------------------
 
+    
